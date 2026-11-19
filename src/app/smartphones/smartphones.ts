@@ -1,38 +1,40 @@
-import { Component , OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Smartphone } from '../model/smartphones.model';
 import { SmartphoneService } from '../services/smartphone';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../services/auth.services';
 
 @Component({
   imports: [CommonModule, RouterLink],
   selector: 'app-smartphones',
-  styleUrl: './smartphones.css',
   templateUrl: './smartphones.html',
   standalone: true,
 })
 export class SmartphonesComponent implements OnInit {
-  smartphones! : Smartphone[];
+  smartphones!: Smartphone[];
 
-  constructor(private smartphoneService: SmartphoneService) {
-  }
+  constructor(
+    private smartphoneService: SmartphoneService,
+    public authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.chargerSmartphones();
   }
-  chargerSmartphones(){
-    this.smartphoneService.listeSmartphones().subscribe(prods => {
-      this.smartphones = prods;
-    });
+
+  chargerSmartphones() {
+    this.smartphones = this.smartphoneService.listeSmartphones();
   }
+
   supprimerSmartphone(smartphone: Smartphone) {
     let conf = confirm("Etes-vous sûr ?");
     if (conf) {
-      this.smartphoneService.supprimerSmartphone(smartphone).subscribe(() => {
-        console.log("Smartphone supprimé");
-        this.chargerSmartphones();
-      });
+      this.smartphoneService.supprimerSmartphone(smartphone);
+      console.log("smartphone supprimé");
+      this.chargerSmartphones();
     }
   }
 }
+
 

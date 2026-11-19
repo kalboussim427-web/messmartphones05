@@ -9,13 +9,11 @@ import { Marque } from '../model/marque.model';
 @Component({
   imports: [CommonModule, FormsModule],
   selector: 'app-update-smartphone',
-  styleUrl: './update-smartphone.css',
   templateUrl: './update-smartphone.html',
   standalone: true,
 })
 export class UpdateSmartphoneComponent implements OnInit {
   currentSmartphone = new Smartphone();
-
   marques! : Marque[];
   updateMarqueId! : number;
 
@@ -26,22 +24,17 @@ export class UpdateSmartphoneComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.smartphoneService.listeMarques().subscribe(marqs =>{
-      this.marques=marqs;
-    }
-
-    )
+    this.marques = this.smartphoneService.listeMarques();
     let id = this.activateRoute.snapshot.params['id'];
-    this.smartphoneService.consulterSmartphone(id).subscribe(prods => {
-      this.currentSmartphone = prods;
+    this.currentSmartphone = this.smartphoneService.consulterSmartphone(id);
+    if (this.currentSmartphone && this.currentSmartphone.marque) {
       this.updateMarqueId = this.currentSmartphone.marque.idMarque;
-
-    });
+    }
   }
   updateSmartphone() {
-    this.smartphoneService.updateSmartphone(this.currentSmartphone).subscribe(() => {
-      this.router.navigate(['smartphones']);
-    });
-    
+    this.currentSmartphone.marque = this.smartphoneService.consulterMarque(this.updateMarqueId);
+    this.smartphoneService.updateSmartphone(this.currentSmartphone);
+    this.router.navigate(['smartphones']);
   }
 }
+

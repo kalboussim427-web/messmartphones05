@@ -1,68 +1,99 @@
 import { Smartphone } from '../model/smartphones.model';
 import { Injectable } from '@angular/core';
 import { Marque } from '../model/marque.model';
-import { of, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 
-@Injectable(
-    {providedIn: 'root'}
-)
+@Injectable({
+  providedIn: 'root'
+})
 export class SmartphoneService {
-    smartphones: Smartphone[] ;
-    marques : Marque[];
-    apiURL: string = '/smartphones/api';
+  smartphones: Smartphone[];
+  marques: Marque[];
 
-    constructor(private http: HttpClient) {
-        this.marques=[
-            {idMarque: 1, nomMarque: "Samsung"},
-            {idMarque: 2, nomMarque: "Apple"},
-            {idMarque: 3, nomMarque: "Xiaomi"},
-            {idMarque: 4, nomMarque: "OPPO"},
-            {idMarque: 5, nomMarque: "Vivo"},
-            {idMarque: 6, nomMarque: "OnePlus"},
-        ];
+  constructor() {
+    this.marques = [
+      { idMarque: 1, nomMarque: "Samsung" },
+      { idMarque: 2, nomMarque: "Apple" },
+      { idMarque: 3, nomMarque: "Xiaomi" },
+      { idMarque: 4, nomMarque: "OPPO" },
+      { idMarque: 5, nomMarque: "Vivo" },
+      { idMarque: 6, nomMarque: "OnePlus" },
+    ];
 
-        this.smartphones = [
-            {idSmartphone: 1, nomSmartphone: 'Samsung Galaxy S26 Ultra', prixSmartphone: 3200, dateSortie: new Date('2026-03-11'), osSmartphone: 'One UI' , marque: {idMarque:1, nomMarque: "Samsung" }},
-            {idSmartphone: 2, nomSmartphone: 'iPhone 17 Pro Max', prixSmartphone: 3900, dateSortie: new Date('2025-09-19'), osSmartphone: 'iOS', marque: {idMarque:2, nomMarque: "Apple" }},
-            {idSmartphone: 3, nomSmartphone: 'Xiaomi 17 Ultra', prixSmartphone: 3700, dateSortie: new Date('2025-12-25'), osSmartphone: 'HyperOS', marque: {idMarque:3, nomMarque: "Xiaomi" }},
-            {idSmartphone: 4, nomSmartphone: 'OPPO Find X9 Ultra', prixSmartphone: 3800, dateSortie: new Date('2026-04-21'), osSmartphone: 'ColorOS', marque: {idMarque:4, nomMarque: "OPPO" }},
-            {idSmartphone: 5, nomSmartphone: 'Vivo X300 Pro', prixSmartphone: 2700, dateSortie: new Date('2025-10-17'), osSmartphone: 'OriginOS', marque: {idMarque:5, nomMarque: "Vivo" }},
-            {idSmartphone: 6, nomSmartphone: 'OnePlus 15', prixSmartphone: 2400, dateSortie: new Date('2025-10-27'), osSmartphone: 'OxygenOS', marque: {idMarque:6, nomMarque: "OnePlus" }},
-        ];
+    this.smartphones = [
+      { idSmartphone: 1, nomSmartphone: 'Samsung Galaxy S26 Ultra', prixSmartphone: 3200, dateSortie: new Date('2026-03-11'), osSmartphone: 'One UI', marque: { idMarque: 1, nomMarque: "Samsung" } },
+      { idSmartphone: 2, nomSmartphone: 'iPhone 17 Pro Max', prixSmartphone: 3900, dateSortie: new Date('2025-09-19'), osSmartphone: 'iOS', marque: { idMarque: 2, nomMarque: "Apple" } },
+      { idSmartphone: 3, nomSmartphone: 'Xiaomi 17 Ultra', prixSmartphone: 3700, dateSortie: new Date('2025-12-25'), osSmartphone: 'HyperOS', marque: { idMarque: 3, nomMarque: "Xiaomi" } },
+      { idSmartphone: 4, nomSmartphone: 'OPPO Find X9 Ultra', prixSmartphone: 3800, dateSortie: new Date('2026-04-21'), osSmartphone: 'ColorOS', marque: { idMarque: 4, nomMarque: "OPPO" } },
+      { idSmartphone: 5, nomSmartphone: 'Vivo X300 Pro', prixSmartphone: 2700, dateSortie: new Date('2025-10-17'), osSmartphone: 'OriginOS', marque: { idMarque: 5, nomMarque: "Vivo" } },
+      { idSmartphone: 6, nomSmartphone: 'OnePlus 15', prixSmartphone: 2400, dateSortie: new Date('2025-10-27'), osSmartphone: 'OxygenOS', marque: { idMarque: 6, nomMarque: "OnePlus" } },
+    ];
+  }
+
+  consulterMarque(id: number): Marque {
+    return this.marques.find(m => m.idMarque == id)!;
+  }
+
+  // الأصلية: ترجّع array (تستعملها add-smartphone و update-smartphone)
+  listeMarques(): Marque[] {
+    return this.marques;
+  }
+
+  // الجديدة: ترجّع Observable (تستعملها liste-marques)
+  listeMarquesObs(): Observable<Marque[]> {
+    return of([...this.marques]);
+  }
+
+  ajouterMarque(m: Marque): Observable<Marque> {
+    const newId = Math.max(0, ...this.marques.map(x => x.idMarque)) + 1;
+    const nouvelle = { ...m, idMarque: newId };
+    this.marques.push(nouvelle);
+    return of(nouvelle);
+  }
+
+  updateMarque(m: Marque): Observable<Marque> {
+    const i = this.marques.findIndex(x => x.idMarque === m.idMarque);
+    if (i > -1) {
+      this.marques[i] = { ...m };
     }
-    listeMarques():Observable<Marque[]>{
-        return this.http.get<Marque[]>(this.apiURL + "/marque");
+    // نبدّلو إسم الماركة في الـ smartphones اللي يستعملوها
+    this.smartphones.forEach(s => {
+      if (s.marque && s.marque.idMarque === m.idMarque) {
+        s.marque = { ...m };
+      }
+    });
+    return of(m);
+  }
+
+  listeSmartphones(): Smartphone[] {
+    return this.smartphones;
+  }
+
+  ajouterSmartphone(smartphone: Smartphone) {
+    this.smartphones.push(smartphone);
+  }
+
+  supprimerSmartphone(smartphone: Smartphone) {
+    const index = this.smartphones.indexOf(smartphone, 0);
+    if (index > -1) {
+      this.smartphones.splice(index, 1);
     }
-    consulterMarque(id: number): Marque {
-        return this.marques.find(m => m.idMarque== id)!;
-    }
-    listeSmartphones(): Observable<Smartphone[]> {
-        return this.http.get<Smartphone[]>(this.apiURL) ;
-    }
-    ajouterSmartphone(smartphone: Smartphone) {
-        this.smartphones.push(smartphone) ;
-    }
-    supprimerSmartphone(smartphone: Smartphone) {
-        const url = '${this.apiURL}/${smartphone.idSmartphone}';
-        return this.http.delete(url);
-        }
-    
-    consulterSmartphone(id: number): Observable<Smartphone> {
-        const url = '${this.apiURL}/${id}';
-        return this.http.get<Smartphone>(url);   
-    }
-    updateSmartphone(prod: Smartphone):Observable<Smartphone> {
-        return this.http.put<Smartphone>(this.apiURL, prod);
-        
-    }
-    
-    rechercheParMarque(idMarque: number):Observable <Smartphone[]> {
-        const url ='${this.apiURL}/smarphonesByMarque/${idMarque}';
-        return this.http.get<Smartphone[]>(url);
-    }
-    rechercherParNom(nom: string): Observable<Smartphone[]>{
-        const url = '${this.apiURL}/smartphonesByName/${nom}';
-        return this.http.get<Smartphone[]>(url);
-    }
+  }
+
+  consulterSmartphone(id: number): Smartphone {
+    return this.smartphones.find(s => s.idSmartphone == id)!;
+  }
+
+  updateSmartphone(prod: Smartphone) {
+    this.supprimerSmartphone(prod);
+    this.ajouterSmartphone(prod);
+  }
+
+  rechercherParNom(nom: string): Smartphone[] {
+    return this.smartphones.filter(s => s.nomSmartphone.toLowerCase().includes(nom.toLowerCase()));
+  }
+
+  rechercherParMarque(idMarque: number): Smartphone[] {
+    return this.smartphones.filter(s => s.marque.idMarque === idMarque);
+  }
 }

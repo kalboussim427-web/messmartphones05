@@ -1,14 +1,19 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Mes Smartphones</a>
-    <div class="collapse navbar-collapse">
+@if (authService.isLoggedIn()) {
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Mes Smartphones</a>
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
           <a class="nav-link" routerLink="/smartphones">Liste Smartphones</a>
         </li>
-        <li>
-          <a class="nav-link" routerLink="/add-smartphone">Ajouter Smartphone</a>
-        </li>
+        @if (authService.isAdmin()) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/add-smartphone">Ajouter Smartphone</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/listeMarques">Gestion des marques</a>
+          </li>
+        }
         <li class="nav-item">
           <a class="nav-link" routerLink="/rechercheParMarque">Recherche par marque</a>
         </li>
@@ -16,7 +21,9 @@
           <a class="nav-link" routerLink="/rechercheParNom">Recherche par nom</a>
         </li>
       </ul>
+      <span class="navbar-text text-light me-3">{{ authService.loggedUser }}</span>
+      <button class="btn btn-outline-light btn-sm" (click)="authService.logout()">Déconnexion</button>
     </div>
-  </div>
-</nav>
+  </nav>
+}
 <router-outlet></router-outlet>

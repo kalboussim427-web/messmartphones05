@@ -9,7 +9,6 @@ import { Marque } from '../model/marque.model';
 @Component({
   imports: [CommonModule, FormsModule],
   selector: 'app-add-smartphone',
-  styleUrl: './add-smartphone.css',
   templateUrl: './add-smartphone.html',
   standalone: true,
 })
@@ -22,16 +21,15 @@ export class AddSmartphoneComponent implements OnInit {
   constructor(private smartphoneService: SmartphoneService, private router: Router) {}
 
   ngOnInit(): void {
-    this.smartphoneService.listeMarques().subscribe(marqs =>{
-      this.marques = marqs;
-    });
-  }
+    
+      this.marques = this.smartphoneService.listeMarques();
+    };
+  
 
   addSmartphone() {
     this.newMarque = this.smartphoneService.consulterMarque(this.newIdMarque);
     this.NewSmartphone.marque = this.newMarque;
-    
     this.smartphoneService.ajouterSmartphone(this.NewSmartphone);
-    this.router.navigate(['smartphones']);
+    this.router.navigate(['/smartphones']);
   }
 }

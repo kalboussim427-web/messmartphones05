@@ -1,34 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { Smartphone } from '../model/smartphones.model';
 import { SmartphoneService } from '../services/smartphone';
-import { Marque } from '../model/marque.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   imports: [CommonModule, FormsModule],
   selector: 'app-recherche-par-marque',
-  styles: ``,
   templateUrl: './recherche-par-marque.html',
   standalone: true,
 })
 export class RechercheParMarqueComponent implements OnInit {
-  smartphones!: Smartphone[] ;
-  idMarque!: number;
-  marques!: Marque[];
-  
+  smartphones!: Smartphone[];
+  marques: string[] = [];
+  nomMarque: string = '';   
 
   constructor(private smartphoneService: SmartphoneService) {}
 
   ngOnInit(): void {
-    this.smartphoneService.listeMarques().subscribe(marques => {
-      this.marques = marques;
-    });
+    this.smartphones = this.smartphoneService.listeSmartphones();
+    this.marques = [
+      ...new Set(this.smartphones.map(s => s.marque?.nomMarque))
+    ].filter((m): m is string => !!m);
   }
 
-  onChange(): void {
-    this.smartphoneService.rechercheParMarque(this.idMarque).subscribe(prods => {
-      this.smartphones=prods;
-  });
+  onChange() {
+    const tous = this.smartphoneService.listeSmartphones();
+    this.smartphones = this.nomMarque === ''
+      ? tous
+      : tous.filter(s => s.marque?.nomMarque === this.nomMarque);
+  }
 }
-}
+

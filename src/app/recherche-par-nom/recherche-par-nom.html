@@ -1,9 +1,9 @@
 <div class="container mt-3">
-
+  <h2>Recherche par Nom (keyup)</h2>
   <form class="form-inline mb-4">
     <div class="form-group mx-sm-3 mb-2 mt-2">
-      <label>Nom Smartphone en tapant</label>
-      <input #nom [(ngModel)]="searchTerm" name="searchTerm" class="form-control" placeholder="Tapez pour filtrer...">
+      <label>Nom Smartphone</label>
+      <input #nom [(ngModel)]="searchTerm" (keyup)="onKeyUp()" name="searchTerm" class="form-control" placeholder="Tapez pour filtrer...">
     </div>
   </form>
 
@@ -21,7 +21,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (smartphone of smartphones | searchFilter: searchTerm; track smartphone.idSmartphone) {
+          @for (smartphone of smartphones ; track smartphone.idSmartphone) {
             <tr>
               <td>{{smartphone.idSmartphone}}</td>
               <td>{{smartphone.nomSmartphone}}</td>

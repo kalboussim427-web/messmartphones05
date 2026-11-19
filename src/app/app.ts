@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
+import { AuthService } from './services/auth.services';
 
 @Component({
   imports: [RouterOutlet, RouterLink],
@@ -10,4 +11,5 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('MesSmartphones');
+  constructor(public authService: AuthService) {}
 }

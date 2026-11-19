@@ -9,7 +9,6 @@ import { SearchFilterPipe } from '../search-filter-pipe';
 @Component({
   imports: [FormsModule, CommonModule, SearchFilterPipe],
   selector: 'app-recherche-par-nom',
-  styles: ``,
   templateUrl: './recherche-par-nom.html',
   standalone: true,
 })
@@ -22,29 +21,13 @@ export class RechercheParNomComponent implements OnInit {
   constructor(private smartphoneService: SmartphoneService){}
 
   ngOnInit(): void {
-    this.smartphoneService.listeSmartphones().subscribe(prods => {
-      console.log(prods);
-      this.smartphones = prods;
-      this.allSmartphones = prods;
-    });
+    this.allSmartphones = this.smartphoneService.listeSmartphones();
+    this.smartphones = this.allSmartphones;
   }
-  rechercherProds(): void {
-    if(this.nomSmartphone){
-    this.smartphoneService.rechercherParNom(this.nomSmartphone).subscribe(prods => {
-      console.log(prods);
-      this.smartphones = prods;
-  });
-} else {
-  this.smartphoneService.listeSmartphones().subscribe(prods => {
-    console.log(prods);
-    this.smartphones= prods;
-});
-}
-}
-onKeyUp(filterText: string){
+  
+  onKeyUp(){
   this.smartphones=this.allSmartphones.filter(item =>
-    item.nomSmartphone.toLowerCase().includes(filterText.toLowerCase())
-
+    item.nomSmartphone.toLowerCase().includes(this.searchTerm.toLowerCase())
   );
 }
 }

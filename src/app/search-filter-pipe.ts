@@ -1,14 +1,18 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { Smartphone } from './model/smartphones.model';
 
 @Pipe({
   name: 'searchFilter',
-  standalone: true
 })
 export class SearchFilterPipe implements PipeTransform {
-  transform(list: any[], filterText: string): any {
-    return list ? list.filter(item =>
-      item.nomSmartphone.toLowerCase().includes(filterText.toLowerCase())): [];
-    
+  transform(smartphones: Smartphone[], searchTerm: string): Smartphone[] {
+    if (!searchTerm) {
+      return smartphones;
+    }
+    searchTerm = searchTerm.toLowerCase();
+    return smartphones.filter((smartphone) =>
+      smartphone.nomSmartphone.toLowerCase().includes(searchTerm)
+    );
   }
   }
 
